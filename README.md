@@ -27,7 +27,7 @@ The application features a modern, high-performance **Next.js App Router (React)
 
 * **Frontend**: Next.js (App Router), React, Tailwind CSS, Lucide Icons, ReactMarkdown, KaTeX.
 * **Backend**: FastAPI (Python), Uvicorn.
-* **AI & Search Agents**: LangGraph, LangChain Core, `langchain-google-genai` (Gemini 2.5 Flash), Tavily Search SDK.
+* **AI & Search Agents**: LangGraph, LangChain Core, `langchain-google-genai` (Gemini 3.5 Flash), Tavily Search SDK.
 * **Database**: SQLite3.
 
 ---
