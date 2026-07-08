@@ -8,8 +8,6 @@ The application features a modern, high-performance **Next.js App Router (React)
 
 ## Project Showcase
 
-*(Take a screenshot of the running dashboard in your browser and save it to `screenshots/dashboard.png` to display it here)*
-
 ![Deep Researcher Dashboard UI](assets/dashboard.png)
 
 ---
