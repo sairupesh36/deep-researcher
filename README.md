@@ -4,9 +4,6 @@ Deep Researcher AI is a production-grade, stateful AI research assistant. Powere
 
 The application features a modern, high-performance **Next.js App Router (React)** frontend that communicates with a **FastAPI** backend to stream real-time execution logs via Server-Sent Events (SSE).
 
----
-
-## Project Showcase
 
 ![Deep Researcher Dashboard UI](assets/dashboard.png)
 
