@@ -1,4 +1,4 @@
-# Deep Researcher AI - Multi-Agent Research System
+# Deep Researcher - A Stateful Multi-Agent Knowledge Synthesis System 
 
 Deep Researcher AI is a production-grade, stateful AI research assistant. Powered by a **Plan-and-Execute multi-agent workflow** orchestrated with **LangGraph**, it generates comprehensive, structured markdown reports on any given topic using **Google Gemini 3.5 Flash** and real-time internet indexing from the **Tavily Search API**.
 
