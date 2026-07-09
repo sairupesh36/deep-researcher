@@ -60,12 +60,12 @@ export default function Home() {
     
     // Default keys to what user provided for ease of testing
     if (!savedGoogleKey) {
-      const defaultGoogle = "AIzaSyDdmlsdAIH2_Rg7BADVRcHEWIwU7BaSDsw";
+      const defaultGoogle = "";
       setGoogleKey(defaultGoogle);
       localStorage.setItem("deep_research_google_key", defaultGoogle);
     }
     if (!savedTavilyKey) {
-      const defaultTavily = "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";
+      const defaultTavily = "";
       setTavilyKey(defaultTavily);
       localStorage.setItem("deep_research_tavily_key", defaultTavily);
     }
