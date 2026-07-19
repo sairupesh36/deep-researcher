@@ -13,9 +13,9 @@ st.sidebar.title("⚙️ Configurations")
 st.sidebar.markdown("Provide your API keys to get started:")
 
 openai_api_key = st.sidebar.text_input(
-    "OpenAI API Key", 
+    "Google Gemini API Key", 
     type="password", 
-    placeholder="sk-..."
+    placeholder="AIzaSy..."
 )
 tavily_api_key = st.sidebar.text_input(
     "Tavily API Key", 
@@ -24,7 +24,7 @@ tavily_api_key = st.sidebar.text_input(
 )
 
 st.sidebar.markdown(
-    "[Get Tavily Key](https://tavily.com) | [Get OpenAI Key](https://platform.openai.com)"
+    "[Get Tavily Key](https://tavily.com) | [Get Gemini Key](https://aistudio.google.com)"
 )
 
 # Main UI

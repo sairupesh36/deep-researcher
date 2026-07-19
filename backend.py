@@ -164,3 +164,10 @@ async def stream_research(query: str, google_api_key: str, tavily_api_key: str, 
             yield f"event: error\ndata: {str(e)}\n\n"
             
     return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+# Serve Next.js static frontend files
+from fastapi.staticfiles import StaticFiles
+import os
+
+if os.path.exists("frontend/out"):
+    app.mount("/", StaticFiles(directory="frontend/out", html=True), name="frontend")

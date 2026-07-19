@@ -25,6 +25,10 @@ import {
   Sparkles
 } from "lucide-react";
 
+const API_BASE = typeof window !== "undefined"
+  ? (window.location.port === "3000" ? "http://localhost:8000" : "")
+  : "";
+
 export default function Home() {
   // Key inputs & search query states
   const [googleKey, setGoogleKey] = useState("");
@@ -83,7 +87,7 @@ export default function Home() {
   // Fetch past reports list
   const fetchHistory = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/history");
+      const response = await fetch(`${API_BASE}/api/history`);
       if (response.ok) {
         const data = await response.json();
         setHistoryList(data);
@@ -99,7 +103,7 @@ export default function Home() {
     setIsLoading(false);
     
     try {
-      const response = await fetch(`http://localhost:8000/api/history/${id}`);
+      const response = await fetch(`${API_BASE}/api/history/${id}`);
       if (response.ok) {
         const data = await response.json();
         setActiveThreadId(data.id);
@@ -153,7 +157,7 @@ export default function Home() {
     
     const threadId = activeThreadId || "";
     
-    const url = `http://localhost:8000/api/research/stream?query=${encodeURIComponent(query.trim())}&google_api_key=${encodeURIComponent(googleKey.trim())}&tavily_api_key=${encodeURIComponent(tavilyKey.trim())}&thread_id=${threadId}`;
+    const url = `${API_BASE}/api/research/stream?query=${encodeURIComponent(query.trim())}&google_api_key=${encodeURIComponent(googleKey.trim())}&tavily_api_key=${encodeURIComponent(tavilyKey.trim())}&thread_id=${threadId}`;
     
     const eventSource = new EventSource(url);
     
