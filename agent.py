@@ -2,7 +2,7 @@ import os
 import operator
 from typing import Annotated, TypedDict, List
 from langgraph.graph import StateGraph, START, END
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from tavily import TavilyClient
 
 # Define the state schema
@@ -21,9 +21,9 @@ class ResearchState(TypedDict):
 
 # Node 1: Planner - Generate research checklist & initial queries
 def planner(state: ResearchState):
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", 
-        google_api_key=state["openai_api_key"]
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile", 
+        groq_api_key=state["openai_api_key"]
     )
     
     plan_prompt = f"Create a structured research plan/checklist to cover all aspects of the topic: '{state['query']}'. " \
@@ -70,9 +70,9 @@ def search_web(state: ResearchState):
 
 # Node 3: Critic - Review findings, check for gaps, and loop if needed
 def critic(state: ResearchState):
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", 
-        google_api_key=state["openai_api_key"]
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile", 
+        groq_api_key=state["openai_api_key"]
     )
     
     loop_cnt = state.get("loop_count", 0)
@@ -112,9 +112,9 @@ def critic(state: ResearchState):
 
 # Node 4: Writer - Synthesize search results and write final report
 def generate_report(state: ResearchState):
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash", 
-        google_api_key=state["openai_api_key"]
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile", 
+        groq_api_key=state["openai_api_key"]
     )
     
     context = "\n\n---\n\n".join(state["search_results"])

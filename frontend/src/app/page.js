@@ -136,7 +136,7 @@ export default function Home() {
 
   // Load keys from localStorage and fetch history on mount
   useEffect(() => {
-    const savedGoogleKey = localStorage.getItem("deep_research_google_key") || "";
+    const savedGoogleKey = localStorage.getItem("deep_research_groq_key") || "";
     const savedTavilyKey = localStorage.getItem("deep_research_tavily_key") || "";
     const savedBackendUrl = localStorage.getItem("deep_research_backend_url") || "";
     setGoogleKey(savedGoogleKey);
@@ -235,7 +235,7 @@ export default function Home() {
 
   // Save keys helper
   const saveKeys = (gKey, tKey, bUrl) => {
-    localStorage.setItem("deep_research_google_key", gKey);
+    localStorage.setItem("deep_research_groq_key", gKey);
     localStorage.setItem("deep_research_tavily_key", tKey);
     localStorage.setItem("deep_research_backend_url", bUrl || "");
   };
@@ -308,7 +308,7 @@ You can boot up the FastAPI backend using **GitHub Codespaces** and link it via 
 
     if (!googleKey || !tavilyKey) {
       setIsConfigOpen(true);
-      alert("Please provide both Google Gemini and Tavily API keys first!");
+      alert("Please provide both Groq and Tavily API keys first!");
       return;
     }
 
@@ -320,7 +320,7 @@ You can boot up the FastAPI backend using **GitHub Codespaces** and link it via 
     
     const threadId = activeThreadId || "";
     
-    const url = `${getBackendUrl()}/api/research/stream?query=${encodeURIComponent(query.trim())}&google_api_key=${encodeURIComponent(googleKey.trim())}&tavily_api_key=${encodeURIComponent(tavilyKey.trim())}&thread_id=${threadId}`;
+    const url = `${getBackendUrl()}/api/research/stream?query=${encodeURIComponent(query.trim())}&groq_api_key=${encodeURIComponent(googleKey.trim())}&tavily_api_key=${encodeURIComponent(tavilyKey.trim())}&thread_id=${threadId}`;
     
     const eventSource = new EventSource(url);
     
@@ -498,7 +498,7 @@ You can boot up the FastAPI backend using **GitHub Codespaces** and link it via 
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-300">Google Gemini API Key</label>
+                  <label className="text-xs font-semibold text-slate-300">Groq API Key</label>
                   <input 
                     type="password"
                     value={googleKey}
@@ -506,7 +506,7 @@ You can boot up the FastAPI backend using **GitHub Codespaces** and link it via 
                       setGoogleKey(e.target.value);
                       saveKeys(e.target.value, tavilyKey, backendUrl);
                     }}
-                    placeholder="AIzaSy..."
+                    placeholder="gsk-..."
                     className="bg-slate-950/80 border border-slate-900 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-800 font-mono"
                   />
                 </div>

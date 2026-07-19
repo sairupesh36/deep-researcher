@@ -83,14 +83,14 @@ async def get_report_detail(thread_id: str):
 
 # 3. API: Stream research progress via Server-Sent Events (SSE)
 @app.get("/api/research/stream")
-async def stream_research(query: str, google_api_key: str, tavily_api_key: str, thread_id: str = None):
+async def stream_research(query: str, groq_api_key: str, tavily_api_key: str, thread_id: str = None):
     if not thread_id:
         thread_id = str(uuid.uuid4())
         
     def event_generator():
         initial_state = {
             "query": query,
-            "openai_api_key": google_api_key, # gemini key mapped to openai_api_key internally in state
+            "openai_api_key": groq_api_key, # Groq key mapped to internal state key
             "tavily_api_key": tavily_api_key,
             "search_queries": [],
             "search_results": [],

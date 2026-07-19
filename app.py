@@ -24,9 +24,9 @@ st.sidebar.title("⚙️ Configurations")
 st.sidebar.markdown("Provide your API keys to get started:")
 
 openai_api_key = st.sidebar.text_input(
-    "Google Gemini API Key", 
+    "Groq API Key", 
     type="password", 
-    placeholder="AIzaSy..."
+    placeholder="gsk-..."
 )
 tavily_api_key = st.sidebar.text_input(
     "Tavily API Key", 
@@ -35,7 +35,7 @@ tavily_api_key = st.sidebar.text_input(
 )
 
 st.sidebar.markdown(
-    "[Get Tavily Key](https://tavily.com) | [Get Gemini Key](https://aistudio.google.com)"
+    "[Get Tavily Key](https://tavily.com) | [Get Groq Key](https://console.groq.com)"
 )
 
 # Main UI
