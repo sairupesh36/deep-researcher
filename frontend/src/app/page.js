@@ -33,6 +33,7 @@ export default function Home() {
   // Key inputs & search query states
   const [googleKey, setGoogleKey] = useState("");
   const [tavilyKey, setTavilyKey] = useState("");
+  const [backendUrl, setBackendUrl] = useState("");
   const [query, setQuery] = useState("");
   
   // App UI states
@@ -59,8 +60,10 @@ export default function Home() {
   useEffect(() => {
     const savedGoogleKey = localStorage.getItem("deep_research_google_key") || "";
     const savedTavilyKey = localStorage.getItem("deep_research_tavily_key") || "";
+    const savedBackendUrl = localStorage.getItem("deep_research_backend_url") || "";
     setGoogleKey(savedGoogleKey);
     setTavilyKey(savedTavilyKey);
+    setBackendUrl(savedBackendUrl);
     
     // Default keys to what user provided for ease of testing
     if (!savedGoogleKey) {
@@ -75,7 +78,7 @@ export default function Home() {
     }
 
     fetchHistory();
-  }, []);
+  }, [backendUrl]);
 
   // Autoscroll terminal logs
   useEffect(() => {
@@ -84,10 +87,14 @@ export default function Home() {
     }
   }, [streamingLogs]);
 
+  const getBackendUrl = () => {
+    return backendUrl.trim() || API_BASE;
+  };
+
   // Fetch past reports list
   const fetchHistory = async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/history`);
+      const response = await fetch(`${getBackendUrl()}/api/history`);
       if (response.ok) {
         const data = await response.json();
         setHistoryList(data);
@@ -103,7 +110,7 @@ export default function Home() {
     setIsLoading(false);
     
     try {
-      const response = await fetch(`${API_BASE}/api/history/${id}`);
+      const response = await fetch(`${getBackendUrl()}/api/history/${id}`);
       if (response.ok) {
         const data = await response.json();
         setActiveThreadId(data.id);
@@ -131,9 +138,10 @@ export default function Home() {
   };
 
   // Save keys helper
-  const saveKeys = (gKey, tKey) => {
+  const saveKeys = (gKey, tKey, bUrl) => {
     localStorage.setItem("deep_research_google_key", gKey);
     localStorage.setItem("deep_research_tavily_key", tKey);
+    localStorage.setItem("deep_research_backend_url", bUrl || "");
   };
 
   // Handle Form Submission (SSE stream)
@@ -157,7 +165,7 @@ export default function Home() {
     
     const threadId = activeThreadId || "";
     
-    const url = `${API_BASE}/api/research/stream?query=${encodeURIComponent(query.trim())}&google_api_key=${encodeURIComponent(googleKey.trim())}&tavily_api_key=${encodeURIComponent(tavilyKey.trim())}&thread_id=${threadId}`;
+    const url = `${getBackendUrl()}/api/research/stream?query=${encodeURIComponent(query.trim())}&google_api_key=${encodeURIComponent(googleKey.trim())}&tavily_api_key=${encodeURIComponent(tavilyKey.trim())}&thread_id=${threadId}`;
     
     const eventSource = new EventSource(url);
     
@@ -328,7 +336,7 @@ export default function Home() {
                     value={googleKey}
                     onChange={(e) => {
                       setGoogleKey(e.target.value);
-                      saveKeys(e.target.value, tavilyKey);
+                      saveKeys(e.target.value, tavilyKey, backendUrl);
                     }}
                     placeholder="AIzaSy..."
                     className="bg-slate-950/80 border border-slate-900 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-800 font-mono"
@@ -341,9 +349,22 @@ export default function Home() {
                     value={tavilyKey}
                     onChange={(e) => {
                       setTavilyKey(e.target.value);
-                      saveKeys(googleKey, e.target.value);
+                      saveKeys(googleKey, e.target.value, backendUrl);
                     }}
                     placeholder="tvly-..."
+                    className="bg-slate-950/80 border border-slate-900 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-800 font-mono"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5 md:col-span-2">
+                  <label className="text-xs font-semibold text-slate-300">Backend API URL (Optional)</label>
+                  <input 
+                    type="text"
+                    value={backendUrl}
+                    onChange={(e) => {
+                      setBackendUrl(e.target.value);
+                      saveKeys(googleKey, tavilyKey, e.target.value);
+                    }}
+                    placeholder="e.g. https://your-username-your-space.hf.space"
                     className="bg-slate-950/80 border border-slate-900 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-800 font-mono"
                   />
                 </div>

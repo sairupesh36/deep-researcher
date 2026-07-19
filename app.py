@@ -1,3 +1,14 @@
+import os
+import sys
+
+# If run on Hugging Face Spaces (Gradio SDK template), run uvicorn server for FastAPI backend on port 7860
+if os.environ.get("SPACE_ID") or os.environ.get("SPACES_ZERO_GPU"):
+    import uvicorn
+    from backend import app
+    if __name__ == "__main__":
+        uvicorn.run(app, host="0.0.0.0", port=7860)
+    sys.exit(0)
+
 import streamlit as st
 from agent import research_agent
 
