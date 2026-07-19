@@ -29,11 +29,89 @@ const API_BASE = typeof window !== "undefined"
   ? (window.location.port === "3000" ? "http://localhost:8000" : "")
   : "";
 
+const MOCK_REPORTS = [
+  {
+    id: "mock-1",
+    query: "Explain the Transformer Architecture and Self-Attention",
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+    report: `# Transformer Architecture & Self-Attention
+
+Introduced in the seminal paper *"Attention Is All You Need"* (Vaswani et al., 2017), the Transformer architecture revolutionized natural language processing (NLP) and computer vision.
+
+## 1. Core Component: Self-Attention
+Self-attention allows the model to associate each word in the input sequence with every other word, creating dynamic context representations.
+
+$$\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V$$
+
+## 2. Encoder-Decoder Block Structure
+- **Encoder**: Processes the input sequence into continuous representations.
+- **Decoder**: Generates output sequences, attending to the encoder's output.
+
+## 3. Key Strengths
+- **Parallelization**: RNNs process tokens sequentially, while Transformers process all tokens simultaneously, drastically reducing training times.
+- **Long-range Dependencies**: Attention has a constant path length between any two tokens, bypassing the vanishing gradient limitations of RNNs/LSTMs.`,
+    search_queries: [
+      "Transformer architecture attention is all you need vaswani",
+      "Mathematical explanation of self attention mechanism",
+      "Transformer encoder decoder structure block diagram"
+    ],
+    search_results: [
+      "Source: Attention Is All You Need paper (https://arxiv.org/abs/1706.03762)\nContent: The Transformer is the first transduction model relying entirely on self-attention to compute representations of its input and output without using sequence-aligned RNNs or convolution.",
+      "Source: Illustrated Transformer (https://jalammar.github.io/illustrated-transformer/)\nContent: Detailed visual guide to how the Transformer operates, explaining query, key, and value vectors."
+    ],
+    logs: [
+      "Planner: Analyzed topic and created research plan checklist.",
+      "Planner: Scheduled initial web search targets: Attention Is All You Need paper, self attention math, transformer structure",
+      "Search Agent: Completed crawling for scheduled queries.",
+      "Search Agent: Retrieved 2 search snippets/references.",
+      "Critic: Gap analysis complete (Iteration 1/2). Found missing information, scheduling supplementary searches.",
+      "Search Agent: Completed supplementary crawling.",
+      "Critic: Gap analysis complete. Gathered data is sufficient to write a comprehensive report.",
+      "Writer: Completed writing and formatting final research report."
+    ]
+  },
+  {
+    id: "mock-2",
+    query: "Breakthroughs in Fusion Energy in 2026",
+    created_at: new Date(Date.now() - 3600000 * 48).toISOString(),
+    report: `# Breakthroughs in Fusion Energy (2026)
+
+In recent years, nuclear fusion has transitioned from a theoretical energy source to a highly anticipated commercial sector. Highlights in 2026 include advancements in high-temperature superconducting (HTS) magnets and magnetic confinement systems.
+
+## 1. High-Temperature Superconducting Magnets
+New designs using Rare-Earth Barium Copper Oxide (REBCO) tapes have achieved magnetic fields exceeding 20 Tesla, reducing the required volume of tokamak reactors by a factor of ten and making commercial deployment economically viable.
+
+## 2. Net Energy Gain Milestones
+Multiple private ventures have reported Q-factors (ratio of fusion power produced to input heating power) exceeding $Q > 1.2$ for sustained runs of over 100 seconds.
+
+## 3. Commercialization Timeline
+Companies like Commonwealth Fusion Systems and Helion Energy are targeting first-grid electricity delivery before 2030, leveraging advanced plasma confinement diagnostics.`,
+    search_queries: [
+      "Fusion energy breakthroughs 2026 milestones",
+      "Commercial tokamak developments REBCO magnets",
+      "Q factor achievements fusion reactors"
+    ],
+    search_results: [
+      "Source: World Nuclear News (https://world-nuclear-news.org)\nContent: Fusion developers report major progress in scaling high-field magnets, bringing tokamak designs closer to pilot plant deployment.",
+      "Source: ITER Project Status (https://www.iter.org)\nContent: ITER updates assembly plans to integrate new plasma confinement diagnostics ahead of deuterium-tritium campaigns."
+    ],
+    logs: [
+      "Planner: Analyzed topic and created research plan checklist.",
+      "Planner: Scheduled initial web search targets: Fusion energy breakthroughs, REBCO magnets, Q factor achievements",
+      "Search Agent: Completed crawling for scheduled queries.",
+      "Search Agent: Retrieved 2 search snippets/references.",
+      "Critic: Gap analysis complete. Gathered data is sufficient to write a comprehensive report.",
+      "Writer: Completed writing and formatting final research report."
+    ]
+  }
+];
+
 export default function Home() {
   // Key inputs & search query states
   const [googleKey, setGoogleKey] = useState("");
   const [tavilyKey, setTavilyKey] = useState("");
   const [backendUrl, setBackendUrl] = useState("");
+  const [isBackendOffline, setIsBackendOffline] = useState(true);
   const [query, setQuery] = useState("");
   
   // App UI states
@@ -98,9 +176,14 @@ export default function Home() {
       if (response.ok) {
         const data = await response.json();
         setHistoryList(data);
+        setIsBackendOffline(false);
+      } else {
+        throw new Error("Backend offline status");
       }
     } catch (error) {
-      console.error("Failed to fetch history:", error);
+      console.warn("Backend offline, loading mock history for portfolio demo:", error);
+      setHistoryList(MOCK_REPORTS);
+      setIsBackendOffline(true);
     }
   };
 
@@ -119,10 +202,23 @@ export default function Home() {
         setSearchQueries(data.search_queries || []);
         setSearchResults(data.search_results || []);
         setStreamingLogs(data.logs || []);
+        return;
       }
     } catch (error) {
+      console.warn("Failed to load online report, searching in mock reports...", error);
+    }
+
+    // Fallback to mock item
+    const mockItem = MOCK_REPORTS.find(item => item.id === id);
+    if (mockItem) {
+      setActiveThreadId(mockItem.id);
+      setQuery(mockItem.query);
+      setReport(mockItem.report);
+      setSearchQueries(mockItem.search_queries || []);
+      setSearchResults(mockItem.search_results || []);
+      setStreamingLogs(mockItem.logs || []);
+    } else {
       alert("Failed to load historical report.");
-      console.error(error);
     }
   };
 
@@ -144,16 +240,75 @@ export default function Home() {
     localStorage.setItem("deep_research_backend_url", bUrl || "");
   };
 
+  const runSimulatedResearch = () => {
+    setIsLoading(true);
+    setReport("");
+    setSearchQueries([]);
+    setSearchResults([]);
+    setStreamingLogs([]);
+
+    const steps = [
+      { log: "Planner: Analyzed topic and created research plan checklist.", delay: 1000 },
+      { log: "Planner: Scheduled initial web search targets: " + query.trim() + " overview, current breakthroughs, main components", delay: 2500 },
+      { log: "Search Agent: Initiated Tavily API search crawling...", delay: 4000 },
+      { log: "Search Agent: Completed crawling. Retrieved 4 search references.", delay: 6000 },
+      { log: "Critic: Gap analysis complete (Iteration 1/2). Found missing information, scheduling supplementary searches.", delay: 7500 },
+      { log: "Search Agent: Completed supplementary crawling.", delay: 9000 },
+      { log: "Critic: Gap analysis complete. Gathered data is sufficient to write report.", delay: 10500 },
+      { log: "Writer: Consolidating findings and synthesizing final report...", delay: 12000 },
+      { log: "Writer: Completed writing and formatting final research report.", delay: 14000 }
+    ];
+
+    steps.forEach((step) => {
+      setTimeout(() => {
+        setStreamingLogs((prev) => [...prev, step.log]);
+      }, step.delay);
+    });
+
+    setTimeout(() => {
+      setSearchQueries([
+        `${query.trim()} general overview and facts`,
+        `${query.trim()} recent news and status`,
+        `${query.trim()} detailed analysis and references`
+      ]);
+      setSearchResults([
+        `Source: Global Science Index (https://example.org/science/${encodeURIComponent(query.trim().toLowerCase())})\nContent: Comprehensive overview detailing the structural advancements and key parameters of ${query.trim()}.`,
+        `Source: Technology Review (https://example.org/tech-review)\nContent: In-depth analysis of the current state, industry adoption, and future outlook for ${query.trim()}.`
+      ]);
+      setReport(`# Simulated Research Report: ${query.trim()}
+
+This is a **simulated research report** generated in Demo Mode because the backend Python server is currently offline.
+
+## 1. Overview
+Researching a topic like **${query.trim()}** involves multiple agent checkpoints. In a live environment, the LangGraph Planner designs a custom search checklist, the Search Agent crawls Google index via the Tavily Search API, and the Critic agent ensures all gaps are resolved.
+
+## 2. Key Findings
+- **Agent Framework**: Built using LangGraph state charts with persistent SQLite checkpoints.
+- **Data Crawling**: Powered by asynchronous Tavily searches.
+- **LaTeX Capabilities**: Supports mathematical equations like $\\lim_{n \\to \\infty} \\left(1 + \\frac{1}{n}\\right)^n = e$ parsed via KaTeX.
+
+## 3. How to run live
+You can boot up the FastAPI backend using **GitHub Codespaces** and link it via the **API Configurations** drawer to perform real, live research!`);
+      setIsLoading(false);
+    }, 14500);
+  };
+
   // Handle Form Submission (SSE stream)
   const handleResearch = (e) => {
     e.preventDefault();
+    if (!query.trim()) {
+      alert("Please enter a research topic!");
+      return;
+    }
+
+    if (isBackendOffline) {
+      runSimulatedResearch();
+      return;
+    }
+
     if (!googleKey || !tavilyKey) {
       setIsConfigOpen(true);
       alert("Please provide both Google Gemini and Tavily API keys first!");
-      return;
-    }
-    if (!query.trim()) {
-      alert("Please enter a research topic!");
       return;
     }
 
@@ -300,9 +455,22 @@ export default function Home() {
               <Cpu className="h-5.5 w-5.5 text-white animate-pulse" />
             </div>
             <div>
-              <h1 className="font-bold text-lg tracking-tight bg-gradient-to-r from-indigo-200 via-slate-100 to-blue-200 bg-clip-text text-transparent flex items-center gap-1.5">
-                Deep Researcher AI <Sparkles className="h-4 w-4 text-indigo-400 fill-indigo-400/20" />
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="font-bold text-lg tracking-tight bg-gradient-to-r from-indigo-200 via-slate-100 to-blue-200 bg-clip-text text-transparent flex items-center gap-1.5">
+                  Deep Researcher AI <Sparkles className="h-4 w-4 text-indigo-400 fill-indigo-400/20" />
+                </h1>
+                {isBackendOffline ? (
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-semibold uppercase tracking-wider">
+                    <span className="h-1 w-1 rounded-full bg-amber-500 animate-pulse" />
+                    <span>Demo Mode</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-semibold uppercase tracking-wider">
+                    <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Connected</span>
+                  </div>
+                )}
+              </div>
               <p className="text-xs text-slate-400 font-medium">Multi-Agent System & Stateful logs</p>
             </div>
           </div>
