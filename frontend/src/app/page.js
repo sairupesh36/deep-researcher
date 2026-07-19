@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 const API_BASE = typeof window !== "undefined"
-  ? (window.location.port === "3000" ? "http://localhost:8000" : "")
+  ? (process.env.NEXT_PUBLIC_API_URL || (window.location.port === "3000" ? "http://localhost:8000" : ""))
   : "";
 
 const MOCK_REPORTS = [
